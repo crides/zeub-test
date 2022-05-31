@@ -1,0 +1,204 @@
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+
+#include <dt-bindings/led/led.h>
+
+ / {
+	chosen {
+		zephyr,bt-mon-uart = &uart0;
+		zephyr,bt-c2h-uart = &uart0;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &flash_code_raw;
+        zephyr,console = &cdc_dev;
+	};
+
+    led_strip: led_strip {
+        compatible = "pwm-leds";
+        strip_w0 {
+            pwms = <&pwm0 30>;
+            label = "Strip 0 white";
+        };
+        strip_y0 {
+            pwms = <&pwm0 29>;
+            label = "Strip 0 yellow";
+        };
+        strip_w1 {
+            pwms = <&pwm0 28>;
+            label = "Strip 1 white";
+        };
+        strip_y1 {
+            pwms = <&pwm0 2>;
+            label = "Strip 1 yellow";
+        };
+    };
+
+    bat {
+        compatible = "zeub,battery-voltage-divider";
+        label = "BATTERY";
+        io-channels = <&adc 1>;
+        output-ohms = <1>;
+        full-ohms = <(1 + 1)>;
+    };
+
+    buttons: kscan {
+        compatible = "zeub,kscan-gpio-direct";
+        status = "okay";
+        label = "buttons";
+        input-gpios
+			= <&gpio0 10 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>      // Encoder push button
+			, <&gpio1  1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>      // 5 way select up/A
+			, <&gpio1 10 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>      // 5 way select down/D
+			, <&gpio1  4 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>      // 5 way select left/C
+			, <&gpio1 13 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>      // 5 way select right/B
+			, <&gpio1  2 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>      // 5 way select center/E
+            ;
+    };
+
+	roller: roller {
+		compatible = "alps,ec11";
+		status = "okay";
+		a-gpios = <&gpio0 9 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+		b-gpios = <&gpio1 6 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+		resolution = <4>;
+	};
+};
+
+&adc {
+	status = "okay";
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&spi0 {
+    compatible = "nordic,nrf-spim";
+    /* status = "okay"; */
+    sck-pin = <19>;
+    mosi-pin = <21>;
+    miso-pin = <23>;
+};
+
+&i2c0 {
+    compatible = "nordic,nrf-twi";
+    status = "okay";
+    scl-pin = <7>;
+    sda-pin = <41>;
+    oled: ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+        status = "okay";
+        reg = <0x3c>;
+        label = "DISPLAY";
+        width = <128>;
+        height = <64>;
+        segment-offset = <0>;
+        page-offset = <0>;
+        display-offset = <0>;
+        multiplex-ratio = <63>;
+        segment-remap;
+        com-invdir;
+        com-sequential;
+        prechargep = <0x22>;
+    };
+
+    tmp117: tmp117@49 {
+        compatible = "ti,tmp116";
+        status = "okay";
+        reg = <0x49>;
+        label = "temp sensor";
+    };
+};
+
+&i2s0 {
+    /* status = "okay"; */
+    sck-pin = <32>;
+    lrck-pin = <22>;
+    sdout-pin = <5>;
+    sdin-pin = <4>;
+
+    left_speaker: left_speaker {
+    };
+};
+
+&spi1 {
+    status = "disabled";
+};
+
+&flash0 {
+	/*
+	 * For more information, see:
+	 * http://docs.zephyrproject.org/latest/devices/dts/flash_partitions.html
+	 */
+	my-partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		flash_sd: partition_sd@0 {
+			label = "softdevice";
+			reg = <0x00000000 0x00026000>;
+		};
+		flash_mbr: partition@0 {
+			label = "mbr";
+			reg = <0x00000000 0x00001000>;
+		};
+		flash_code_soft: partition@26000 {
+			label = "code_partition_softdevice";
+			reg = <0x00026000 0x000c6000>;
+		};
+		flash_code: partition@1000 {
+			label = "code_partition";
+			reg = <0x00001000 0x000eb000>;
+		};
+		flash_code_raw: partition_raw@0 {
+			label = "raw_code_partition";
+			reg = <0x00000000 0x000ec000>;
+		};
+
+		/*
+		 * The flash starting at 0x000ec000 and ending at
+		 * 0x000f3fff is reserved for use by the application.
+		 */
+
+		/*
+		 * Storage partition will be used by FCB/LittleFS/NVS
+		 * if enabled.
+		 */
+		flash_storage: partition@ec000 {
+			label = "flash_storage";
+			reg = <0x000ec000 0x00008000>;
+		};
+
+		flash_boot: partition@f4000 {
+			label = "adafruit_boot";
+			reg = <0x000f4000 0x0000c000>;
+		};
+	};
+};
+
+zephyr_udc0: &usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+
+	cdc_dev: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+		label = "CDC_ACM_0";
+	};
+};
+
+&pwm0 {
+    status = "okay";
+    ch0-pin = <30>;
+    ch1-pin = <29>;
+    ch2-pin = <28>;
+    ch3-pin = <2>;
+};

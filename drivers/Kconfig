@@ -1,0 +1,29 @@
+# Copyright (c) 2020 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+rsource "ec11/Kconfig"
+rsource "battery/Kconfig.defconfig"
+
+config ZEUB_KSCAN_INIT_PRIORITY
+	int "Keyboard scan driver init priority"
+	default 40
+	help
+	  Keyboard scan device driver initialization priority.
+
+config ZEUB_KSCAN_DEBOUNCE_PRESS_MS
+	int "Debounce time for key press in milliseconds."
+	default -1
+	help
+		Global debounce time for key press in milliseconds.
+		If this is -1, the debounce time is controlled by the debounce-press-ms
+		Devicetree property, which defaults to 5 ms. Otherwise this overrides the
+		debounce time for all key scan drivers to the chosen value.
+
+config ZEUB_KSCAN_DEBOUNCE_RELEASE_MS
+	int "Debounce time for key release in milliseconds."
+	default -1
+	help
+		Global debounce time for key release in milliseconds.
+		If this is -1, the debounce time is controlled by the debounce-release-ms
+		Devicetree property, which defaults to 5 ms. Otherwise this overrides the
+		debounce time for all key scan drivers to the chosen value.

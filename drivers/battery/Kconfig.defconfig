@@ -1,0 +1,8 @@
+config ADC
+    default y
+
+config SENSOR
+    default y
+
+config EC11
+    default y

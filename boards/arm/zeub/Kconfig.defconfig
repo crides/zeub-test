@@ -1,0 +1,26 @@
+# Zeub board configuration
+
+# Copyright (c) 2020 Tobias Svehagen
+# SPDX-License-Identifier: Apache-2.0
+
+DT_COMPAT_TMP117 := ti,tmp116
+DT_COMPAT_SSD1306 := solomon,ssd1306fb
+
+if BOARD_ZEUB
+
+config BOARD
+	default "zeub"
+
+config BT_CTLR
+	default BT
+
+config TMP116
+	default $(dt_compat_enabled,$(DT_COMPAT_TMP117))
+
+config SSD1306
+	default $(dt_compat_enabled,$(DT_COMPAT_SSD1306))
+
+config I2C
+    default y
+
+endif # BOARD_ZEUB

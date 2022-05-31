@@ -1,0 +1,15 @@
+identifier: zeub
+name: Zeub
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - adc
+  - usb_device
+  - usb_cdc
+  - ble
+  - watchdog
+  - counter

@@ -1,0 +1,8 @@
+# Zeub board configuration
+
+# Copyright (c) 2020 Tobias Svehagen
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_ZEUB
+	bool "Zeub"
+	depends on SOC_NRF52840_QIAA

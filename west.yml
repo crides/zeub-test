@@ -1,0 +1,20 @@
+manifest:
+  remotes:
+    - name: zephyr
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      path: zephyr
+      revision: main
+      remote: zephyr
+      clone-depth: 1
+      import:
+        name-allowlist:
+          - lvgl
+          - hal_nordic
+          - cmsis
+          - segger
+
+  self:
+    path: test_manifest
